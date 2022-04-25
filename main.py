@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+
 def make_undirected_graph(edge_list):
     """ Makes an undirected graph from a list of edge tuples. """
     graph = defaultdict(set)
@@ -16,32 +17,39 @@ def reachable(graph, start_node):
     """
     result = set([start_node])
     frontier = set([start_node])
+    result.add(start_node)
     while len(frontier) != 0:
-        ###TODO
-        pass
+        x = frontier.pop()
+        if x in graph:
+            for value in graph[x]:
+                if value not in result:
+                    frontier.add(value)
+                    result.add(value)
     return result
+
 
 def test_reachable():
     graph = make_undirected_graph([('A', 'B'), ('B', 'C'), ('C', 'D'), ('D', 'B')])
-    assert sorted(reachable(graph, 'A')) == ['A', 'B', 'C', 'D']
+    assert sorted(reachable(graph, 'B')) == ['A', 'B', 'C', 'D']
 
     graph = make_undirected_graph([('A', 'B'), ('B', 'C'), ('C', 'D'), ('D', 'B'), ('E', 'F'), ('F', 'G')])
     assert sorted(reachable(graph, 'A')) == ['A', 'B', 'C', 'D']
     assert sorted(reachable(graph, 'E')) == ['E', 'F', 'G']
 
 
-
-
 def connected(graph):
-    ### TODO
-    pass
+    for key in graph.keys():
+        if len(graph) == len(reachable(graph, key)):
+            return True
+        else:
+            return False
+
 
 def test_connected():
-    graph = make_undirected_graph([('A', 'B'), ('B', 'C'), ('C', 'D'), ('D', 'B')])
-    assert connected(graph) == True
+    graph1 = make_undirected_graph([('A', 'B'), ('B', 'C'), ('C', 'D'), ('D', 'B')])
+    assert connected(graph1) == True
     graph = make_undirected_graph([('A', 'B'), ('B', 'C'), ('C', 'D'), ('D', 'B'), ('E', 'F'), ('F', 'G')])
     assert connected(graph) == False
-
 
 
 def n_components(graph):
@@ -49,8 +57,19 @@ def n_components(graph):
     Returns:
       the number of connected components in an undirected graph
     """
-    ### TODO
-    pass
+    lengths = []
+    result = []
+    if connected(graph):
+        return 1
+    else:
+        for key in graph.keys():
+            lengths.append(len(reachable(graph, key)))
+    for element in lengths:
+        if element in result:
+            continue
+        else:
+            result.append(element)
+    return len(result)
 
 def test_n_components():
     graph = make_undirected_graph([('A', 'B'), ('B', 'C'), ('C', 'D'), ('D', 'B')])
